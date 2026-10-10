@@ -3,247 +3,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amir | Cinematic Visuals</title>
+    <title>Amir | Video Editor & Motion Designer</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Inter for body, Caveat for handwriting, VT323 for the blocky pixel name -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;800&family=VT323&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --glow-color: rgba(255, 170, 0, 0.6); /* Cinematic Amber */
-            --bg-color: #050505;
+            --paper-line: #cbd5e1;
+            --paper-bg: #f8fafc;
+            --tape-white: rgba(255, 255, 255, 0.7);
+            --tape-blue: rgba(186, 230, 253, 0.6);
+            --tape-yellow: rgba(253, 230, 138, 0.6);
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: #e5e5e5;
-            overflow-x: hidden;
+            background-color: #9ca3af;
+            /* Desk grid pattern */
+            background-image: 
+                linear-gradient(#f3f4f6 1px, transparent 1px),
+                linear-gradient(90deg, #f3f4f6 1px, transparent 1px);
+            background-size: 40px 40px;
         }
 
-        /* Cinematic Vignette Overlay */
-        .vignette {
-            position: fixed;
+        .font-pixel { font-family: 'VT323', monospace; }
+        .font-hand { font-family: 'Caveat', cursive; }
+
+        /* Lined Notebook Paper Effect */
+        .notebook-paper {
+            background-color: var(--paper-bg);
+            background-image: linear-gradient(var(--paper-line) 1px, transparent 1px);
+            background-size: 100% 3rem;
+            background-position: 0 3rem;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Red Margin Line */
+        .notebook-paper::before {
+            content: '';
+            position: absolute;
             top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.85) 100%);
-            pointer-events: none;
-            z-index: 50;
+            bottom: 0;
+            left: 8%;
+            width: 2px;
+            background-color: rgba(248, 113, 113, 0.4);
+            z-index: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .notebook-paper::before { left: 5%; }
         }
 
-        /* Subtle Film Grain */
-        .grain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 49;
-            opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        .content-layer {
+            position: relative;
+            z-index: 10;
         }
 
-        /* Glowing Text Utility */
-        .text-glow {
-            text-shadow: 0 0 20px var(--glow-color);
+        /* Hand-drawn Box Effect (Red border around name) */
+        .drawn-box {
+            border: 4px solid #ef4444; 
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            padding: 0.5rem 3rem;
+            display: inline-block;
+            background: transparent;
         }
 
-        .border-glow:hover {
-            box-shadow: 0 0 25px rgba(255, 170, 0, 0.3);
-            border-color: rgba(255, 170, 0, 0.5);
+        /* Tape Effects for Polaroids and Cards */
+        .tape {
+            position: absolute;
+            width: 90px;
+            height: 30px;
+            background: var(--tape-white);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            backdrop-filter: blur(2px);
+            z-index: 20;
+        }
+        .tape-blue { background: var(--tape-blue); }
+        .tape-yellow { background: var(--tape-yellow); }
+
+        /* Polaroid Photo Style */
+        .polaroid {
+            background: white;
+            padding: 12px 12px 48px 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            border: 1px solid #e5e7eb;
         }
 
-        /* Scroll Reveal Animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        /* Project Tab Shapes */
+        .tab-shape {
+            clip-path: polygon(0 100%, 15px 0, calc(100% - 15px) 0, 100% 100%);
         }
 
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+        /* Skill Pill Custom Shapes */
+        .skill-pill {
+            border-radius: 8px 20px 8px 20px / 20px 8px 20px 8px;
+            border: 2px solid transparent;
         }
 
-        /* Specific delays for staggered reveals */
-        .delay-100 { transition-delay: 100ms; }
-        .delay-200 { transition-delay: 200ms; }
-        .delay-300 { transition-delay: 300ms; }
+        /* Hide scrollbar for clean look but keep functionality */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="antialiased selection:bg-amber-500 selection:text-black">
+<body class="py-0 md:py-12 selection:bg-yellow-200 selection:text-black">
 
-    <!-- Global Overlays -->
-    <div class="vignette"></div>
-    <div class="grain"></div>
-
-    <nav class="fixed w-full z-40 top-0 bg-black/50 backdrop-blur-md border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-xl font-bold tracking-widest uppercase text-white hover:text-amber-500 transition-colors">Amir.</a>
-            <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest text-gray-400">
-                <a href="#about" class="hover:text-amber-500 transition-colors">About</a>
-                <a href="#skills" class="hover:text-amber-500 transition-colors">Skills</a>
-                <a href="#portfolio" class="hover:text-amber-500 transition-colors">Portfolio</a>
-                <a href="#contact" class="hover:text-amber-500 transition-colors">Contact</a>
-            </div>
-        </div>
-    </nav>
-
-    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <!-- Background Ambient Light -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <main class="max-w-6xl mx-auto notebook-paper min-h-screen md:rounded-sm overflow-hidden border border-gray-200">
         
-        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto reveal active">
-            <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter text-white mb-6 text-glow">
-                Amir
-            </h1>
-            <p class="text-lg md:text-2xl text-gray-400 font-light tracking-widest uppercase mb-12">
-                Video Editor <span class="text-amber-600 mx-2">|</span> Motion Designer <span class="text-amber-600 mx-2">|</span> Graphic Designer <span class="text-amber-600 mx-2">|</span> Social Media Manager
-            </p>
-            <a href="#portfolio" class="inline-block px-10 py-4 border border-amber-600 text-amber-500 uppercase tracking-widest text-sm font-bold hover:bg-amber-600 hover:text-black transition-all duration-300 border-glow">
-                Explore the Vision
-            </a>
-        </div>
-    </section>
-
-    <section id="about" class="py-32 relative z-10 bg-black/40">
-        <div class="max-w-4xl mx-auto px-6 text-center reveal">
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-widest mb-10 text-white">The Director's Cut</h2>
-            <div class="w-24 h-1 bg-amber-600 mx-auto mb-10"></div>
-            <p class="text-xl md:text-2xl text-gray-300 leading-relaxed font-light">
-                I don't just edit; I orchestrate visual experiences. Specializing in high-end dynamic text reveals, compelling social campaigns, and cinematic aesthetics, I bridge the gap between raw footage and unforgettable digital impact. Every frame is deliberate. Every cut tells a story.
-            </p>
-        </div>
-    </section>
-
-    <section id="skills" class="py-32 relative z-10">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-widest mb-16 text-center text-white reveal">Arsenal</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Skill Card 1 -->
-                <div class="bg-zinc-900/50 border border-white/10 p-8 hover:bg-zinc-900 transition-colors border-glow reveal delay-100">
-                    <h3 class="text-amber-500 text-xl font-bold mb-4 uppercase tracking-wider">Post-Production</h3>
-                    <p class="text-gray-400">Mastery in Adobe Premiere Pro and After Effects for seamless editing, color grading, and dynamic motion graphics.</p>
-                </div>
-                <!-- Skill Card 2 -->
-                <div class="bg-zinc-900/50 border border-white/10 p-8 hover:bg-zinc-900 transition-colors border-glow reveal delay-200">
-                    <h3 class="text-amber-500 text-xl font-bold mb-4 uppercase tracking-wider">Visual Design</h3>
-                    <p class="text-gray-400">Pixel-perfect compositions using Photoshop and Illustrator, crafting compelling brand identities and graphic assets.</p>
-                </div>
-                <!-- Skill Card 3 -->
-                <div class="bg-zinc-900/50 border border-white/10 p-8 hover:bg-zinc-900 transition-colors border-glow reveal delay-300">
-                    <h3 class="text-amber-500 text-xl font-bold mb-4 uppercase tracking-wider">Generative AI</h3>
-                    <p class="text-gray-400">Leveraging cutting-edge AI tools like Kling and Google Flow to push the boundaries of visual creation and conceptual art.</p>
-                </div>
-                <!-- Skill Card 4 -->
-                <div class="bg-zinc-900/50 border border-white/10 p-8 hover:bg-zinc-900 transition-colors border-glow reveal delay-100">
-                    <h3 class="text-amber-500 text-xl font-bold mb-4 uppercase tracking-wider">Automation</h3>
-                    <p class="text-gray-400">Custom ExtendScript automation to streamline workflows, allowing more time for creative direction and less on repetitive tasks.</p>
-                </div>
-                <!-- Skill Card 5 -->
-                <div class="bg-zinc-900/50 border border-white/10 p-8 hover:bg-zinc-900 transition-colors border-glow reveal delay-200 lg:col-span-2">
-                    <h3 class="text-amber-500 text-xl font-bold mb-4 uppercase tracking-wider">Social Media Strategy</h3>
-                    <p class="text-gray-400">End-to-end campaign management. Translating high-end cinematic visuals into engaging, platform-optimized content that drives metrics and builds audiences.</p>
+        <!-- Top Navigation -->
+        <nav class="relative z-20 flex flex-wrap justify-between items-center p-5 md:px-12 border-b border-gray-300 bg-white/50 backdrop-blur-md">
+            <!-- Logo area -->
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                    <span class="font-pixel text-lg mt-1">A</span>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section id="portfolio" class="py-32 relative z-10 bg-black/40">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-widest mb-16 text-center text-white reveal">Selected Works</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Portfolio Item 1 -->
-                <div class="group relative overflow-hidden bg-zinc-900 aspect-video border border-white/10 reveal delay-100">
-                    <!-- Placeholder Image -->
-                    <img src="https://placehold.co/800x450/111111/ffaa00?text=Cinematic+Showreel" alt="Showreel" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700">
-                    <div class="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <h3 class="text-2xl font-bold text-white mb-2 tracking-widest uppercase">2026 Showreel</h3>
-                        <p class="text-amber-500 text-sm tracking-wider uppercase">Video Editing / Motion</p>
-                    </div>
+            <!-- Links -->
+            <div class="flex gap-4 md:gap-8 text-xs md:text-sm font-bold uppercase tracking-widest mt-4 md:mt-0 w-full md:w-auto justify-center order-3 md:order-2">
+                <a href="#" class="flex items-center gap-2 bg-yellow-300 px-4 py-2 rounded shadow-sm hover:-translate-y-1 transition-transform border border-yellow-400">
+                    <span class="text-lg leading-none">★</span> Home
+                </a>
+                <a href="#about" class="flex items-center gap-2 hover:bg-gray-100/80 px-4 py-2 rounded transition-colors">
+                    <span class="text-lg leading-none">👤</span> About
+                </a>
+                <a href="#projects" class="flex items-center gap-2 hover:bg-gray-100/80 px-4 py-2 rounded transition-colors">
+                    <span class="text-lg leading-none">⚏</span> Work
+                </a>
+            </div>
+            
+            <!-- Contact Button -->
+            <div class="flex order-2 md:order-3">
+                <a href="#contact" class="bg-black text-white px-5 py-2 rounded text-sm font-bold flex items-center gap-2 hover:bg-gray-800 shadow-[3px_3px_0px_#cbd5e1] hover:shadow-[1px_1px_0px_#cbd5e1] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                    <span>♥</span> Contact
+                </a>
+            </div>
+        </nav>
+
+        <section class="content-layer pt-28 pb-32 px-6 md:px-12 lg:px-24 text-center relative">
+            
+            <div class="relative max-w-3xl mx-auto mb-12">
+                
+                <!-- Skill/Role Tag 1 -->
+                <div class="absolute -top-16 left-0 md:-left-4 rotate-[-4deg]">
+                    <span class="bg-green-200 text-green-900 text-[10px] md:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest border border-green-300 shadow-sm font-pixel text-lg">
+                        Made Things
+                    </span>
+                    <!-- Arrow pointing to name -->
+                    <svg class="absolute -bottom-6 right-4 w-6 h-6 text-gray-500 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </div>
+                
+                <!-- Skill/Role Tag 2 -->
+                <div class="absolute -top-10 right-0 md:-right-4 rotate-[3deg]">
+                    <span class="bg-orange-200 text-orange-900 text-[10px] md:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest border border-orange-300 shadow-sm font-pixel text-lg">
+                        Sweat The Details
+                    </span>
+                    <!-- Arrow pointing to name -->
+                    <svg class="absolute -bottom-6 left-4 w-6 h-6 text-gray-500 rotate-[135deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </div>
 
-                <!-- Portfolio Item 2 -->
-                <div class="group relative overflow-hidden bg-zinc-900 aspect-video border border-white/10 reveal delay-200">
-                    <img src="https://placehold.co/800x450/111111/ffaa00?text=Brand+Identity" alt="Brand Identity" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700">
-                    <div class="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <h3 class="text-2xl font-bold text-white mb-2 tracking-widest uppercase">Cyberpunk Aesthetic</h3>
-                        <p class="text-amber-500 text-sm tracking-wider uppercase">Graphic Design</p>
-                    </div>
+                <!-- Handwriting Note -->
+                <div class="absolute -top-12 left-1/2 -translate-x-1/2 font-hand text-3xl text-gray-700">
+                    my name is
+                    <div class="h-[2px] w-full bg-gray-400 rounded mt-1"></div>
+                    <div class="h-[2px] w-3/4 mx-auto bg-gray-400 rounded mt-1"></div>
                 </div>
 
-                <!-- Portfolio Item 3 -->
-                <div class="group relative overflow-hidden bg-zinc-900 aspect-video border border-white/10 reveal delay-100">
-                    <img src="https://placehold.co/800x450/111111/ffaa00?text=Social+Campaign" alt="Social Campaign" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700">
-                    <div class="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <h3 class="text-2xl font-bold text-white mb-2 tracking-widest uppercase">Tech Launch Campaign</h3>
-                        <p class="text-amber-500 text-sm tracking-wider uppercase">Social Media / Motion</p>
-                    </div>
+                <!-- Main Name inside drawn box -->
+                <div class="drawn-box relative mt-6 bg-white/50 backdrop-blur-sm">
+                    <h1 class="font-pixel text-[6rem] md:text-[9rem] text-black leading-[0.8] tracking-tight py-4">Aamir Waseem</h1>
                 </div>
 
-                <!-- Portfolio Item 4 -->
-                <div class="group relative overflow-hidden bg-zinc-900 aspect-video border border-white/10 reveal delay-200">
-                    <img src="https://placehold.co/800x450/111111/ffaa00?text=AI+Generated+Concepts" alt="AI Generated Concepts" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition-all duration-700">
-                    <div class="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <h3 class="text-2xl font-bold text-white mb-2 tracking-widest uppercase">AI Concept Art</h3>
-                        <p class="text-amber-500 text-sm tracking-wider uppercase">Generative AI</p>
+                <!-- Bottom Tags (Roles & Location) -->
+                <div class="flex flex-wrap justify-center md:justify-between items-center mt-8 gap-4 px-4 md:px-12 relative">
+                    <div class="bg-yellow-300 text-yellow-900 text-xs font-bold px-3 py-1 rounded shadow-sm border border-yellow-400 rotate-[-2deg]">
+                        Video Editor
+                    </div>
+                    
+                    <div class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                        <span class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></span>
+                        Motion Designer
+                    </div>
+
+                    <div class="bg-teal-300 text-teal-900 text-xs font-bold px-3 py-1 rounded shadow-sm border border-teal-400 rotate-[2deg] font-hand text-xl">
+                        Islamabad, Pakistan
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section id="contact" class="py-32 relative z-10">
-        <div class="max-w-3xl mx-auto px-6 text-center reveal">
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-widest mb-8 text-white">Initialize Contact</h2>
-            <p class="text-gray-400 mb-12">Ready to elevate your visual presence? Let's collaborate.</p>
+            <!-- Tagline -->
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-black mt-16 max-w-4xl mx-auto leading-[1.1] tracking-tight">
+                I edit short form & Long form videos and Manages Social Media <span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-500 rounded-full text-white mx-2 align-middle shadow-inner border-2 border-green-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span> motion graphics that tell compelling stories. <span class="text-pink-500 text-5xl leading-none align-middle inline-block hover:rotate-180 transition-transform duration-700">✿</span>
+            </h2>
             
-            <form class="space-y-6 text-left">
-                <div>
-                    <input type="text" placeholder="YOUR NAME" class="w-full bg-black border border-white/20 p-4 text-white focus:outline-none focus:border-amber-500 focus:shadow-[0_0_15px_rgba(255,170,0,0.3)] transition-all uppercase tracking-wider text-sm placeholder-gray-600">
+            <div class="mt-14">
+                <a href="#contact" class="bg-[#1a1a1a] text-white px-8 py-4 rounded text-sm font-bold inline-flex items-center gap-3 hover:bg-gray-800 transition-colors shadow-lg">
+                    <span class="text-blue-400 bg-white/10 p-1 rounded">↗</span> CONTACT ME
+                </a>
+            </div>
+        </section>
+
+        <section id="about" class="content-layer py-24 px-6 md:px-20 lg:px-32 relative">
+            
+            <!-- Subtle Hand-drawn separator line -->
+            <div class="absolute top-0 left-10 right-10 h-[1px] opacity-20">
+                <svg width="100%" height="20" preserveAspectRatio="none" viewBox="0 0 100 20">
+                    <path d="M0 10 Q 50 20 100 10" fill="transparent" stroke="black" stroke-width="0.5"/>
+                </svg>
+            </div>
+
+            <div class="font-hand text-3xl text-gray-800 mb-16 rotate-[-2deg] opacity-80">about me!</div>
+
+            <div class="flex flex-col md:flex-row gap-16 lg:gap-24 items-center">
+                
+                <!-- Left: Polaroid Photo -->
+                <div class="w-full md:w-5/12 flex justify-center relative">
+                    <!-- Tapes -->
+                    <div class="tape tape-blue -top-4 -left-6 rotate-[-15deg]"></div>
+                    <div class="tape tape-yellow -top-2 -right-4 rotate-[10deg]"></div>
+                    
+                    <!-- Polaroid Frame -->
+                    <div class="polaroid rotate-[-2deg] transition-transform hover:rotate-1 duration-500 w-72 max-w-full z-10">
+                        
+                        <!-- 
+                          HOW TO ADD YOUR IMAGE:
+                          Replace the 'src' below with the path to your image file.
+                          Example: <img src="images/my-workspace.jpg" alt="Amir Workspace" class="...">
+                        -->
+                        <img src="https://placehold.co/600x750/334155/f8fafc?text=Amir's+Workspace" alt="Amir Workspace" class="w-full aspect-[4/5] object-cover border border-gray-200 grayscale-[20%] sepia-[10%]">
+                        <div class="font-hand text-center mt-4 text-gray-600 text-2xl tracking-wide">my workspace</div>
+                    </div>
                 </div>
-                <div>
-                    <input type="email" placeholder="YOUR EMAIL" class="w-full bg-black border border-white/20 p-4 text-white focus:outline-none focus:border-amber-500 focus:shadow-[0_0_15px_rgba(255,170,0,0.3)] transition-all uppercase tracking-wider text-sm placeholder-gray-600">
+
+                <!-- Right: Text & Skills -->
+                <div class="w-full md:w-7/12">
+                    <div class="inline-block border-[2px] border-black px-5 py-1.5 mb-8 text-sm font-bold bg-white rounded uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                        what's up
+                    </div>
+                    
+                    <p class="font-hand text-3xl text-gray-900 leading-relaxed mb-10">
+                        I'm a video editor and motion designer with over 5 years of experience who loves cinematic lighting, high-contrast visuals, and bringing concepts to life. ✨ I care about the fine details, smooth animations, and delivering cuts that genuinely captivate the audience. 🎬
+                    </p>
+
+                    <!-- Colorful Skill Pills -->
+                    <div class="flex flex-wrap gap-4 mt-6">
+                        <span class="skill-pill bg-blue-500 text-white font-bold px-5 py-2 flex items-center gap-2 shadow-sm border-blue-600">
+                            Premiere Pro <span class="text-xl leading-none">🎞️</span>
+                        </span>
+                        <span class="skill-pill bg-purple-500 text-white font-bold px-5 py-2 flex items-center gap-2 shadow-sm border-purple-600">
+                            After Effects <span class="text-xl leading-none">✨</span>
+                        </span>
+                        <span class="skill-pill bg-cyan-500 text-white font-bold px-5 py-2 flex items-center gap-2 shadow-sm border-cyan-600">
+                            Photoshop <span class="text-xl leading-none">🖼️</span>
+                        </span>
+                        <span class="skill-pill bg-orange-500 text-white font-bold px-5 py-2 flex items-center gap-2 shadow-sm border-orange-600">
+                            Illustrator <span class="text-xl leading-none">✒️</span>
+                        </span>
+                        <span class="skill-pill bg-pink-500 text-white font-bold px-5 py-2 flex items-center gap-2 shadow-sm border-pink-600">
+                            Kling AI <span class="text-xl leading-none">🤖</span>
+                        </span>
+                        <span class="skill-pill bg-indigo-500 text-white font-bold px-5 py-2 flex items-center gap-2 shadow-sm border-indigo-600">
+                            ExtendScript <span class="text-xl leading-none">💻</span>
+                        </span>
+                    </div>
                 </div>
-                <div>
-                    <textarea rows="4" placeholder="PROJECT DETAILS" class="w-full bg-black border border-white/20 p-4 text-white focus:outline-none focus:border-amber-500 focus:shadow-[0_0_15px_rgba(255,170,0,0.3)] transition-all uppercase tracking-wider text-sm placeholder-gray-600"></textarea>
+            </div>
+        </section>
+
+        <section id="projects" class="content-layer py-24 px-4 md:px-12 relative z-10">
+            
+            <div class="max-w-5xl mx-auto">
+                <!-- Project 1 & 2 Tabs -->
+                <div class="flex gap-1 mb-[-2px] pl-4 md:pl-10 relative z-20">
+                    <div class="tab-shape bg-[#111] text-blue-400 px-8 md:px-12 py-4 text-xs md:text-sm font-bold uppercase tracking-widest relative cursor-pointer hover:bg-black transition-colors">
+                        + Project 01
+                    </div>
+                    <div class="tab-shape bg-gray-200 text-gray-500 px-8 md:px-12 py-4 text-xs md:text-sm font-bold uppercase tracking-widest relative mt-1 hover:bg-gray-300 transition-colors cursor-pointer">
+                        + Project 02
+                    </div>
                 </div>
-                <button type="button" class="w-full py-4 bg-amber-600 text-black font-bold uppercase tracking-widest hover:bg-amber-500 transition-colors border-glow">
-                    Transmit Message
-                </button>
-            </form>
-        </div>
-    </section>
+                
+                <!-- Project 1 Content Card (ASTRALIX) - Dark Theme -->
+                <div class="bg-[#111] text-white p-8 md:p-16 rounded-b-xl rounded-tr-xl relative shadow-2xl mb-24 border border-gray-800">
+                    <div class="flex flex-col lg:flex-row gap-12 items-center">
+                        <div class="w-full lg:w-5/12 z-10 order-2 lg:order-1">
+                            <div class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-3">
+                                <span class="w-2 h-2 rounded-full bg-white inline-block"></span> Motion Graphics
+                            </div>
+                            <h3 class="text-5xl md:text-6xl font-bold mb-6 tracking-tight">ASTRALIX</h3>
+                            <p class="text-gray-400 mb-10 text-lg leading-relaxed">Luxury space travel cinematic commercial concept. Featuring custom After Effects storyboarding, high-contrast visual grading, and immersive sound design.</p>
+                            <a href="#" class="uppercase tracking-widest text-sm font-bold border-b-2 border-white pb-1 hover:text-blue-400 hover:border-blue-400 transition-colors inline-flex items-center gap-2">
+                                View Project <span>↗</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Pinned Image/Video representation -->
+                        <div class="w-full lg:w-7/12 relative order-1 lg:order-2">
+                            <div class="tape tape-blue -top-4 right-10 rotate-[4deg]"></div>
+                            <div class="tape -bottom-4 left-10 rotate-[-3deg]"></div>
+                            <div class="relative group">
+                                
+                                <!-- 
+                                  HOW TO ADD A LOOPING VIDEO (HTML5):
+                                  To show a silent, looping video (like a GIF but better quality), use the video tag below.
+                                  Remove the <img> tag and uncomment the <video> tag.
+                                  Ensure your video file is in your project folder and update the 'src'.
+                                -->
+                                
+                                <!-- <video autoplay loop muted playsinline class="w-full h-auto rounded shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-gray-700">
+                                    <source src="assets/astralix-clip.mp4" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video> -->
 
-    <footer class="py-8 text-center text-gray-600 text-sm tracking-widest uppercase border-t border-white/5 relative z-10 bg-black">
-        <p>&copy; 2026 Amir. All visual rights reserved.</p>
-    </footer>
+                                <img src="https://placehold.co/800x500/000000/ffffff?text=ASTRALIX+Cinematic" alt="Astralix Project" class="w-full h-auto rounded shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-gray-700 transition-transform duration-500 group-hover:scale-[1.02]">
+                                
+                                <!-- Play Button Overlay (Optional, if linking to a full video) -->
+                                <div class="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-none">
+                                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center pl-1 shadow-lg">
+                                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Intersection Observer for scroll animations
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.15
-            };
+                <!-- Project 2 (TMFearFactory) -> Simplified view to simulate switching tabs -->
+                <div class="hidden">
+                    <!-- In a real JS app, clicking Tab 2 would show this. Hidden for static HTML -->
+                </div>
 
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        // Optional: Stop observing once revealed
-                        // observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
+                <!-- Project 3 Tabs -->
+                <div class="flex gap-1 mb-[-2px] pl-4 md:pl-20 mt-16 relative z-20">
+                    <div class="tab-shape bg-[#facc15] text-black px-8 md:px-12 py-4 text-xs md:text-sm font-bold uppercase tracking-widest relative cursor-pointer border-t border-l border-r border-yellow-500">
+                        + Project 03
+                    </div>
+                </div>
+                
+                <!-- Project 3 Content Card (Shapers Real Estate) - Yellow Theme -->
+                <div class="bg-[#facc15] text-black p-8 md:p-16 rounded-b-xl rounded-tr-xl rounded-tl-xl relative shadow-2xl border border-yellow-500">
+                    <div class="flex flex-col lg:flex-row gap-12 items-center">
+                        <div class="w-full lg:w-5/12 z-10 order-2 lg:order-1">
+                            <div class="text-xs font-bold uppercase tracking-widest text-black/70 mb-4 flex items-center gap-3">
+                                <span class="w-2 h-2 rounded-full bg-black inline-block"></span> Video Editing
+                            </div>
+                            <h3 class="text-5xl md:text-6xl font-bold mb-6 tracking-tight">Shapers</h3>
+                            <p class="text-black/80 mb-10 text-lg leading-relaxed">Grey structure development reels and timelines for Shapers Real Estate. Fast-paced, informative edits that highlight structural integrity and construction milestones.</p>
+                            <a href="#" class="uppercase tracking-widest text-sm font-bold border-b-2 border-black pb-1 hover:text-white hover:border-white transition-colors inline-flex items-center gap-2">
+                                View Project <span>↗</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Pinned Image representation -->
+                        <div class="w-full lg:w-7/12 relative order-1 lg:order-2">
+                            <div class="tape tape-white -top-4 left-1/2 -translate-x-1/2 rotate-[-1deg]"></div>
+                            <div class="relative group aspect-video">
+                                
+                                <!-- 
+                                  HOW TO ADD A YOUTUBE/VIMEO EMBED:
+                                  If your video is hosted on YouTube, you can embed it directly.
+                                  Remove the <img> tag below and uncomment the <iframe> block.
+                                  Replace the 'src' URL with your video's embed URL.
+                                -->
 
-            const revealElements = document.querySelectorAll('.reveal');
-            revealElements.forEach(el => observer.observe(el));
-        });
-    </script>
+                                <!-- <iframe 
+                                    class="w-full h-full rounded shadow-xl border border-yellow-600/30"
+                                    src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" 
+                                    title="YouTube video player" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe> -->
+
+                                <img src="https://placehold.co/800x500/ffffff/333333?text=Real+Estate+Reel" alt="Shapers Project" class="w-full h-full object-cover rounded shadow-xl border border-yellow-600/30 filter grayscale hover:grayscale-0 transition-all duration-700 group-hover:scale-[1.02]">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Extra mentioned project (TMFearFactory) placed as a smaller card for layout variety -->
+                <div class="mt-24 max-w-4xl mx-auto">
+                    <div class="font-hand text-2xl text-gray-500 mb-4 pl-4">also worked on...</div>
+                    <div class="bg-white p-6 md:p-8 rounded-xl border-2 border-dashed border-gray-300 flex flex-col md:flex-row items-center gap-8 hover:border-red-400 transition-colors">
+                        <div class="w-full md:w-1/3">
+                             <img src="https://placehold.co/400x300/1a1a1a/ef4444?text=Horror+Edits" alt="TM Fear Factory" class="w-full h-auto rounded border border-gray-200 rotate-2">
+                        </div>
+                        <div class="w-full md:w-2/3">
+                            <h4 class="text-3xl font-bold mb-2">TMFearFactory</h4>
+                            <p class="text-gray-600 mb-4">Long-form compilation horror video edits with dramatic pacing, sound design, and suspense building.</p>
+                            <span class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pacing & Suspense</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <footer id="contact" class="content-layer py-20 px-6 mt-10 text-center border-t border-dashed border-gray-300 relative bg-white/40">
+            
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Let's make something.</h2>
+            <p class="text-gray-600 mb-10 max-w-lg mx-auto">Looking for a video editor or motion designer for your next big project? Drop me a line.</p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16">
+                <!-- Replace 'your.email@example.com' with your actual email -->
+                <a href="mailto:your.email@example.com" class="bg-black text-white px-8 py-4 rounded text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-transform hover:-translate-y-1 shadow-lg w-full sm:w-auto">
+                    Email Me
+                </a>
+                
+                <!-- Social Icons -->
+                <div class="flex gap-4">
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="w-14 h-14 bg-blue-100 text-blue-700 rounded flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors border border-blue-200">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="w-14 h-14 bg-pink-100 text-pink-600 rounded flex items-center justify-center hover:bg-pink-600 hover:text-white transition-colors border border-pink-200">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="font-hand text-2xl text-gray-400 mb-2">thanks for stopping by!</div>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">&copy; 2026 Amir. Built for Impact.</p>
+            
+            <!-- Small Doodle -->
+            <div class="absolute bottom-6 left-12 opacity-20 pointer-events-none hidden md:block">
+                <svg width="60" height="60" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 50 Q 50 10 80 50 T 20 50" stroke-linejoin="round"/>
+                    <circle cx="50" cy="65" r="5" fill="currentColor"/>
+                </svg>
+            </div>
+        </footer>
+
+    </main>
+
 </body>
 </html>
